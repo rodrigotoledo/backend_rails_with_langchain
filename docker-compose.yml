@@ -1,0 +1,45 @@
+version: '3.8'
+networks:
+  backend:
+services:
+  db_postgresql:
+    image: ankane/pgvector:latest
+    ports:
+      - "5432:5432"
+    environment:
+      DB_HOST: ${DB_HOST}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_PORT: ${DB_PORT}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+  app:
+    build: .
+    tty: true
+    volumes:
+      - .:/app
+      - bundle:/usr/local/bundle
+    working_dir: /app
+    environment:
+      FORCE_DB_CREATE: ${FORCE_DB_CREATE}
+      FORCE_DB_SEED: ${FORCE_DB_SEED}
+      APPLICATION_NAME: ${APPLICATION_NAME}
+      DB_HOST: ${DB_HOST}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_PORT: ${DB_PORT}
+      PORT: ${PORT}
+      BUNDLE_GEMFILE: /app/Gemfile
+    command: bin/docker-dev-start-web.sh
+    networks:
+      - backend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db_postgresql
+
+volumes:
+  bundle:
+  postgres_data:
