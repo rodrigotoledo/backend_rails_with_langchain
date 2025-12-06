@@ -9,3 +9,40 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+
+require 'faker'
+
+# Seed clients with random addresses
+5.times do
+  name = Faker::Name.name
+  nickname = Faker::Name.first_name
+  email = Faker::Internet.email
+  phone = Faker::PhoneNumber.phone_number
+  cpf = Faker::Number.number(digits: 11).to_s
+  rg = Faker::Number.number(digits: 9).to_s
+  birth_date = Faker::Date.birthday(min_age: 18, max_age: 65)
+
+  num_addresses = rand(1..5)
+  addresses_attributes = num_addresses.times.map do
+    {
+      address_type: [ "Pessoal", "Comercial" ].sample,
+      street: Faker::Address.street_name,
+      number: Faker::Address.building_number,
+      complement: [ nil, Faker::Address.secondary_address ].sample,
+      neighborhood: Faker::Address.community,
+      city: Faker::Address.city,
+      state: Faker::Address.state_abbr,
+      zip_code: Faker::Address.zip_code
+    }
+  end
+
+  Client.find_or_create_by!(email: email) do |client|
+    client.name = name
+    client.nickname = nickname
+    client.phone = phone
+    client.cpf = cpf
+    client.rg = rg
+    client.birth_date = birth_date
+    client.addresses_attributes = addresses_attributes
+  end
+end

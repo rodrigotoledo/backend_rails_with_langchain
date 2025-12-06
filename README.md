@@ -92,6 +92,7 @@ To Run Migrations, Tests ... Etc, Run The App With Whatever Is Needed:
 
 ```bash
 docker compose run app rails db:drop db:create db:migrate
+docker compose run app rails db:seed
 ```
 
 ## Rails Commands

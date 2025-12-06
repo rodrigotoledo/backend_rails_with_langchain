@@ -1,0 +1,35 @@
+{
+  "files.autoSave": "off",
+  "files.hotExit": "off",
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "editor.formatOnSave": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "never"
+  },
+  "ruby.format": "rubocop",
+  "ruby.lint": {
+    "rubocop": true
+  },
+  "ruby.intellisense": "rubyLocals",
+  "ruby.useBundler": true,
+  "ruby.useLanguageServer": true,
+  "git.autofetch": false,
+  "git.confirmSync": false,
+  "workbench.editor.enablePreview": false,
+  "files.exclude": {
+    "**/.git": true,
+    "**/.DS_Store": true,
+    "**/tmp": true,
+    "**/log": true,
+    "**/storage": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/tmp": true,
+    "**/log": true,
+    "**/storage": true,
+    "**/vendor": true
+  }
+}

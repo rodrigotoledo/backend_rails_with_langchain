@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "rebornix.ruby",
+    "castwide.solargraph",
+    "misogi.ruby-rubocop",
+    "ms-vscode.vscode-json",
+    "bradlc.vscode-tailwindcss",
+    "ms-vscode-remote.remote-containers"
+  ]
+}

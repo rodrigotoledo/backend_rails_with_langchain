@@ -29,6 +29,7 @@ services:
       DB_HOST: ${DB_HOST}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
       DB_PORT: ${DB_PORT}
       PORT: ${PORT}
       BUNDLE_GEMFILE: /app/Gemfile
@@ -36,7 +37,7 @@ services:
     networks:
       - backend
     ports:
-      - "3000:3000"
+      - "8000:8000"
     depends_on:
       - db_postgresql
 
