@@ -12,7 +12,7 @@
   "ruby.lint": {
     "rubocop": true
   },
-  "ruby.intellisense": "rubyLocals",
+  "ruby.intellisense": "rubyLocate",
   "ruby.useBundler": true,
   "ruby.useLanguageServer": true,
   "git.autofetch": false,
