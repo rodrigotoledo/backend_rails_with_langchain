@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_05_040735) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_10_094525) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "vector"
@@ -49,6 +49,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_05_040735) do
     t.bigint "client_id", null: false
     t.string "complement"
     t.datetime "created_at", null: false
+    t.vector "embedding", limit: 1536
     t.string "neighborhood"
     t.string "number"
     t.string "state"
@@ -58,11 +59,39 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_05_040735) do
     t.index ["client_id"], name: "index_addresses_on_client_id"
   end
 
+  create_table "client_address_vectors", force: :cascade do |t|
+    t.bigint "client_id", null: false
+    t.datetime "created_at", null: false
+    t.vector "embedding", limit: 1536
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_client_address_vectors_on_client_id"
+    t.index ["embedding"], name: "index_client_address_embedding", opclass: :vector_cosine_ops, using: :ivfflat
+  end
+
+  create_table "client_contact_vectors", force: :cascade do |t|
+    t.bigint "client_id", null: false
+    t.datetime "created_at", null: false
+    t.vector "embedding", limit: 1536
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_client_contact_vectors_on_client_id"
+    t.index ["embedding"], name: "index_client_contact_embedding", opclass: :vector_cosine_ops, using: :ivfflat
+  end
+
+  create_table "client_personal_vectors", force: :cascade do |t|
+    t.bigint "client_id", null: false
+    t.datetime "created_at", null: false
+    t.vector "embedding", limit: 1536
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_client_personal_vectors_on_client_id"
+    t.index ["embedding"], name: "index_client_personal_embedding", opclass: :vector_cosine_ops, using: :ivfflat
+  end
+
   create_table "clients", force: :cascade do |t|
     t.date "birth_date"
     t.string "cpf"
     t.datetime "created_at", null: false
     t.string "email"
+    t.vector "embedding", limit: 1536
     t.string "name"
     t.string "nickname"
     t.string "phone"
@@ -83,5 +112,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_05_040735) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "addresses", "clients"
+  add_foreign_key "client_address_vectors", "clients"
+  add_foreign_key "client_contact_vectors", "clients"
+  add_foreign_key "client_personal_vectors", "clients"
   add_foreign_key "uploads", "clients"
 end

@@ -99,11 +99,11 @@ class Api::V1::ClientsController < ApplicationController
   end
 
   def upload_document
-    upload = @client.uploads.build(context: params[:context] || 'document')
+    upload = @client.uploads.build(context: params[:context] || "document")
     upload.file.attach(params[:document])
     if upload.save
       ProcessUploadJob.perform_later(upload.id)
-      response = { message: 'Document uploaded successfully', url: url_for(upload.file), upload_id: upload.id }
+      response = { message: "Document uploaded successfully", url: url_for(upload.file), upload_id: upload.id }
       render json: response, status: :ok
     else
       render json: { errors: upload.errors }, status: :unprocessable_entity

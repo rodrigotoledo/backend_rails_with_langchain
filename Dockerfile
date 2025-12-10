@@ -39,7 +39,7 @@ USER appuser
 WORKDIR /app
 COPY --chown=appuser:appuser Gemfile* ./
 RUN gem install bundler
-RUN bundle lock --add-platform x86_64-linux
+# RUN bundle lock --add-platform x86_64-linux  # Commented out for dev with local gems
 RUN bundle install
 RUN gem install foreman
 COPY --chown=appuser:appuser . /app

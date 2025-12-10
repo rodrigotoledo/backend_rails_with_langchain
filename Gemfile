@@ -49,6 +49,9 @@ group :development, :test do
 
   gem "faker"
 
+  gem "vcr"
+  gem "webmock"
+
   # Debugging
   gem "debug", platforms: %i[mri windows], require: "debug/prelude"
 
@@ -64,4 +67,6 @@ group :development do
 end
 
 gem "sidekiq"
+gem "langchainrb_rails", path: "/home/rtoledo/www/gems/langchainrb_rails"
 gem "neighbor"
+gem "ruby-openai"

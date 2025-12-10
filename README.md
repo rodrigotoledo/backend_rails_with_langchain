@@ -71,6 +71,7 @@ And Change The Dockerfile.Development File With The Value You Found
 So Build You Just Need To Run The First Time:
 
 ```bash
+docker compose up --build
 docker compose build
 ```
 
@@ -84,6 +85,8 @@ docker compose down -v
 docker compose run app bundle install
 docker compose run app bash
 docker compose run app rails active_storage:install
+docker compose run app rails solid_queue:install
+docker compose run app rails solid_cache:install
 ```
 
 ## Migrations
@@ -91,7 +94,8 @@ docker compose run app rails active_storage:install
 To Run Migrations, Tests ... Etc, Run The App With Whatever Is Needed:
 
 ```bash
-docker compose run app rails db:drop db:create db:migrate
+docker compose run app rails db:drop db:create
+docker compose run app rails db:migrate
 docker compose run app rails db:seed
 ```
 

@@ -21,6 +21,7 @@ services:
     volumes:
       - .:/app
       - bundle:/usr/local/bundle
+      - /home/rtoledo/www/gems/langchainrb_rails:/gems/langchainrb_rails
     working_dir: /app
     environment:
       FORCE_DB_CREATE: ${FORCE_DB_CREATE}
@@ -31,8 +32,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       GOOGLE_API_KEY: ${GOOGLE_API_KEY}
       DB_PORT: ${DB_PORT}
-      PORT: ${PORT}
-      BUNDLE_GEMFILE: /app/Gemfile
+      PORT: ${PORT}2
     command: bin/docker-dev-start-web.sh
     networks:
       - backend

@@ -13,7 +13,7 @@
 require 'faker'
 
 # Seed clients with random addresses
-5.times do
+10.times do
   name = Faker::Name.name
   nickname = Faker::Name.first_name
   email = Faker::Internet.email
@@ -45,4 +45,46 @@ require 'faker'
     client.birth_date = birth_date
     client.addresses_attributes = addresses_attributes
   end
+end
+
+
+Client.find_or_create_by!(email: "john@example.com", name: "John Doe Toledo") do |client|
+  client.nickname = "Johnny"
+  client.phone = "555-1234",
+  client.cpf = "00958373965"
+  client.rg = "MG1234567"
+  client.birth_date = Date.new(1990, 1, 1)
+  client.addresses_attributes = [
+    {
+      address_type: "Pessoal",
+      street: "Main St",
+      number: "100",
+      complement: "Apt 1",
+      neighborhood: "Downtown",
+      city: "Metropolis",
+      state: "NY",
+      zip_code: "12345"
+    }
+  ]
+end
+
+
+Client.find_or_create_by!(email: Faker::Internet.email, name: "#{Faker::Name.name_with_middle} John") do |client|
+  client.nickname = "Johnny"
+  client.phone = "555-1234",
+  client.cpf = "00958373965"
+  client.rg = "MG1234567"
+  client.birth_date = Date.new(1990, 1, 1)
+  client.addresses_attributes = [
+    {
+      address_type: "Pessoal",
+      street: "Main St",
+      number: "100",
+      complement: "Apt 1",
+      neighborhood: "Downtown",
+      city: "Metropolis",
+      state: "NY",
+      zip_code: "12345"
+    }
+  ]
 end
