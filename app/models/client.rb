@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 class Client < ApplicationRecord
-  vectorsearch
+  # vectorsearch
 
-  after_save :upsert_to_vectorsearch
+  # after_save :upsert_to_vectorsearch
+  after_save :sync_to_gemini, if: :relevant_change?
 
   has_many :addresses, dependent: :destroy
   has_many :uploads, dependent: :destroy
@@ -22,7 +23,16 @@ class Client < ApplicationRecord
     "#{name} #{nickname}".strip
   end
 
-  def as_vector
-    { name: full_name, email: email }.to_json(except: :embedding)
+  # def as_vector
+  #   { name: full_name, email: email }.to_json(except: :embedding)
+  # end
+  #
+  private
+  def relevant_change?
+    saved_change_to_name? || saved_change_to_email? || addresses.any?(&:saved_changes?)
+  end
+
+  def sync_to_gemini
+    GeminiClientsSyncService.new.sync_client(self)
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class Api::V1::ClientsControllerTest < ActionDispatch::IntegrationTest
@@ -7,7 +9,7 @@ class Api::V1::ClientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create client" do
-    assert_difference('Client.count') do
+    assert_difference("Client.count") do
       post api_v1_clients_url, params: {
         name: "Jane Doe",
         email: "jane@example.com",

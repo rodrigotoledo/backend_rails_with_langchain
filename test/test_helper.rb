@@ -24,9 +24,9 @@ module ActiveSupport
     setup do
       stub_request(:post, "https://api.openai.com/v1/embeddings")
         .to_return(status: 200, body: {
-          data: [{ embedding: [0.1] * 1536 }],
+          data: [ { embedding: [ 0.1 ] * 1536 } ],
           usage: { prompt_tokens: 10, total_tokens: 10 }
-        }.to_json, headers: { 'Content-Type' => 'application/json' })
+        }.to_json, headers: { "Content-Type" => "application/json" })
     end
 
     # Add more helper methods to be used by all tests here...

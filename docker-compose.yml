@@ -32,7 +32,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       GOOGLE_API_KEY: ${GOOGLE_API_KEY}
       DB_PORT: ${DB_PORT}
-      PORT: ${PORT}2
+      PORT: ${PORT}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
     command: bin/docker-dev-start-web.sh
     networks:
       - backend

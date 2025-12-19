@@ -67,7 +67,8 @@ group :development do
   gem "solargraph", require: false
 end
 
+gem "gemini-ai"
 gem "sidekiq"
-gem "langchainrb_rails", path: "/home/rtoledo/www/gems/langchainrb_rails"
+gem "langchainrb_rails"
 gem "neighbor"
 gem "ruby-openai"

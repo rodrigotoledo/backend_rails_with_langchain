@@ -88,3 +88,6 @@ Client.find_or_create_by!(email: Faker::Internet.email, name: "#{Faker::Name.nam
     }
   ]
 end
+
+
+GeminiClientsSyncService.new.sync_all!
