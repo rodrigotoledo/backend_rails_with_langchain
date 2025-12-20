@@ -1,0 +1,163 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Environment Variables Validator
+# This script validates that all required environment variables are set
+
+# ANSI color codes
+class Colors
+  def self.red(text)
+    "\e[31m#{text}\e[0m"
+  end
+
+  def self.green(text)
+    "\e[32m#{text}\e[0m"
+  end
+
+  def self.yellow(text)
+    "\e[33m#{text}\e[0m"
+  end
+
+  def self.cyan(text)
+    "\e[36m#{text}\e[0m"
+  end
+
+  def self.bold(text)
+    "\e[1m#{text}\e[0m"
+  end
+end
+
+# Define required and optional variables
+REQUIRED_VARS = {
+  "GEMINI_API_KEY" => "Google Gemini API key for AI features",
+  "POSTGRES_PASSWORD" => "PostgreSQL password"
+}.freeze
+
+OPTIONAL_VARS = {
+  "RAILS_ENV" => "Rails environment",
+  "RAILS_MAX_THREADS" => "Maximum threads for Puma",
+  "APPLICATION_NAME" => "Application name",
+  "DB_HOST" => "Database host",
+  "DB_PORT" => "Database port",
+  "POSTGRES_USER" => "PostgreSQL user",
+  "DB_USERNAME" => "Database username",
+  "DB_PASSWORD" => "Database password",
+  "PORT" => "Server port",
+  "BINDING" => "Server binding address",
+  "FORCE_DB_CREATE" => "Force database creation",
+  "FORCE_DB_SEED" => "Force database seeding",
+  "GOOGLE_API_KEY" => "Google API key"
+}.freeze
+
+def check_env_file
+  unless File.exist?(".env")
+    puts Colors.red("❌ .env file not found!")
+    puts Colors.yellow("💡 Run: cp .env.example .env")
+    return false
+  end
+  puts Colors.green("✅ .env file exists")
+  true
+end
+
+def validate_required_vars
+  missing = []
+  placeholder = []
+
+  REQUIRED_VARS.each do |var, description|
+    value = ENV[var]
+    if value.nil? || value.empty?
+      missing << "#{var} - #{description}"
+    elsif value.include?("your_") || value.include?("_here")
+      placeholder << "#{var} - #{description}"
+    end
+  end
+
+  if missing.any?
+    puts "\n" + Colors.red("❌ Missing required variables:")
+    missing.each { |v| puts Colors.red("  - #{v}") }
+  end
+
+  if placeholder.any?
+    puts "\n" + Colors.yellow("⚠️  Variables with placeholder values:")
+    placeholder.each { |v| puts Colors.yellow("  - #{v}") }
+  end
+
+  missing.empty?
+end
+
+def show_optional_vars
+  set = []
+  unset = []
+
+  OPTIONAL_VARS.each do |var, description|
+    value = ENV[var]
+    if value.nil? || value.empty?
+      unset << "#{var} - #{description}"
+    else
+      set << "#{var} = #{value}"
+    end
+  end
+
+  if set.any?
+    puts "\n" + Colors.green("✅ Set optional variables:")
+    set.each { |v| puts Colors.green("  - #{v}") }
+  end
+
+  if unset.any?
+    puts "\n" + Colors.cyan("💡 Unset optional variables (will use defaults):")
+    unset.each { |v| puts Colors.cyan("  - #{v}") }
+  end
+end
+
+def load_env_file
+  # Simple .env file loader
+  if File.exist?(".env")
+    File.readlines(".env").each do |line|
+      line = line.strip
+      next if line.empty? || line.start_with?("#")
+
+      key, value = line.split("=", 2)
+      next unless key && value
+
+      # Remove quotes if present
+      value = value.strip.gsub(/^["']|["']$/, "")
+      ENV[key.strip] = value unless value.empty?
+    end
+  end
+end
+
+def main
+  puts "=" * 60
+  puts Colors.bold("Environment Variables Validator")
+  puts "=" * 60
+
+  # Load .env file
+  load_env_file
+  puts Colors.green("✅ Loaded .env file") if File.exist?(".env")
+
+  puts "\n" + "=" * 60
+  puts Colors.bold("Checking environment configuration...")
+  puts "=" * 60
+
+  env_exists = check_env_file
+  required_ok = validate_required_vars
+  show_optional_vars
+
+  puts "\n" + "=" * 60
+  if env_exists && required_ok
+    puts Colors.bold(Colors.green("✅ Environment validation passed!"))
+    puts "=" * 60
+    exit 0
+  else
+    puts Colors.bold(Colors.red("❌ Environment validation failed!"))
+    puts "=" * 60
+    puts "\n" + Colors.yellow("💡 Next steps:")
+    puts "  1. Copy .env.example to .env if not done"
+    puts "  2. Update required variables in .env"
+    puts "  3. Run this script again to validate"
+    puts "\nSee docs/ENVIRONMENT_VARIABLES.md for more info"
+    exit 1
+  end
+end
+
+main if __FILE__ == $0

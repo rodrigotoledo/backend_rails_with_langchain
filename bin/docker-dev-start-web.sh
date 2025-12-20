@@ -18,10 +18,11 @@ chmod -R 775 /app/db
 bundle
 
 if [[ "${FORCE_DB_CREATE}" == "true" ]]; then
-  bin/rails db:drop
-  bin/rails db:drop:cache
-  bin/rails db:drop:cable
-  bin/rails db:drop:queue
+  echo ">> Force creating databases..."
+  bin/rails db:drop || true
+  bin/rails db:drop:cache || true
+  bin/rails db:drop:cable || true
+  bin/rails db:drop:queue || true
   bin/rails db:create
   bin/rails db:create:cache
   bin/rails db:create:cable

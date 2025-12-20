@@ -8,13 +8,26 @@
   "editor.codeActionsOnSave": {
     "source.fixAll": "never"
   },
+
+  // Ruby configuration
   "ruby.format": "rubocop",
   "ruby.lint": {
-    "rubocop": true
+    "rubocop": {
+      "exe": "${workspaceFolder}/bin/rubocop-wrapper.sh"
+    }
   },
   "ruby.intellisense": "rubyLocate",
   "ruby.useBundler": true,
   "ruby.useLanguageServer": true,
+
+  // RuboCop configuration (for misogi.ruby-rubocop extension)
+  "ruby.rubocop.executePath": "${workspaceFolder}/bin/",
+  "ruby.rubocop.configFilePath": "${workspaceFolder}/.rubocop.yml",
+  "ruby.rubocop.onSave": false,
+
+  // Standard Ruby configuration (for testdouble.vscode-standard-ruby extension)
+  "standardRuby.commandPath": "${workspaceFolder}/bin/rubocop-wrapper.sh",
+
   "git.autofetch": false,
   "git.confirmSync": false,
   "workbench.editor.enablePreview": false,

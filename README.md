@@ -1,132 +1,331 @@
-# Course: Ruby on Rails Application Development with Time Events
+# Rails Backend with LangChain & Gemini AI
 
-## Introduction
+Ruby on Rails API application integrated with LangChain and Google Gemini for AI-powered features, using PostgreSQL with pgvector for vector storage.
 
-Presentation of the course and objectives.
+## 🚀 Quick Start
 
-## Setup
+### Prerequisites
 
-1 - Clone from server
+- Docker & Docker Compose
+- Git
+- (Optional) Make for easier commands
+
+### Initial Setup
+
+1. **Clone the repository**
+
+   ```bash
+   git clone <repository-url>
+   cd backend_rails_with_langchain
+   ```
+
+2. **Setup environment variables**
+
+   ```bash
+   # Using Make (recommended)
+   make setup
+
+   # Or manually
+   cp .env.example .env
+   ```
+
+3. **Configure your API keys**
+
+   Edit `.env` and add your Google Gemini API key:
+
+   ```env
+   GEMINI_API_KEY=your_actual_api_key_here
+   ```
+
+   Get your API key at: [Google AI Studio](https://makersuite.google.com/app/apikey)
+
+4. **Configure VSCode (Optional but Recommended)**
+
+   ```bash
+   # Copy VSCode settings template
+   cp -r .vscode.example .vscode
+   ```
+
+   This will configure VSCode to use RuboCop inside Docker automatically.
+   See [.vscode.example/README.md](.vscode.example/README.md) for details.
+
+5. **Start the application**
+
+   ```bash
+   # Using Make
+   make start
+
+   # Or using Docker Compose directly
+   docker-compose up -d
+   ```
+
+6. **Access the application**
+
+   The API will be available at: `http://localhost:8000`## 📚 Documentation
+
+- **[Environment Variables Guide](docs/ENVIRONMENT_VARIABLES.md)** - Complete reference for all environment variables
+
+## 🛠️ Available Commands
+
+### Using Make (Recommended)
 
 ```bash
-git clone ...
+make help              # Show all available commands
+make setup             # Initial setup
+make start             # Start containers
+make stop              # Stop containers
+make restart           # Restart containers
+make logs              # View all logs
+make logs-app          # View app logs only
+make shell             # Open shell in app container
+make console           # Open Rails console
+make db-migrate        # Run migrations
+make db-seed           # Seed database
+make db-reset          # Reset database
+make test              # Run tests
+make validate-env      # Validate environment variables
 ```
 
-2 - Bundle install
+### Using Docker Compose Directly
 
 ```bash
-bundle install
+# Start services
+docker-compose up -d
+
+# Stop services
+docker-compose down
+
+# View logs
+docker-compose logs -f app
+
+# Run Rails commands
+docker-compose exec app rails console
+docker-compose exec app rails db:migrate
+
+# Run tests
+docker-compose exec app rails test
+
+# Open shell
+docker-compose exec app bash
 ```
 
-3 - Create database and migrate
+## 🗄️ Database Management
+
+### Migrations
 
 ```bash
-rails db:create db:migrate db:seed
+# Using Make
+make db-migrate
+
+# Or using Docker Compose
+docker-compose exec app rails db:migrate
 ```
 
-4 - Access localhost from http://localhost:3000
-
-## Offline Functionality
-
-### Saving Data Offline
-
-- When the user is offline, the application intercepts the form submission.
-- The form data (e.g., message content) is stored in the browser’s localStorage.
-
-### Synchronizing Data with PostgreSQL
-
-- Once the user comes back online, the application attempts to sync the offline data with the server.
-- The saved data is sent to the server using the POST request and stored in the PostgreSQL database.
-
-### CSRF Token Handling
-
-- The application automatically includes the CSRF token with requests to ensure the data is submitted securely.
-- If offline, the CSRF token is saved locally and included when syncing with the server.
-
-## With Docker
-
-Need To Clean All Your Docker?
+### Seeding
 
 ```bash
+# Using Make
+make db-seed
+
+# Or using Docker Compose
+docker-compose exec app rails db:seed
+```
+
+### Reset Database
+
+```bash
+# Using Make
+make db-reset
+
+# Or using Docker Compose
+docker-compose exec app rails db:reset
+```
+
+### PostgreSQL Shell
+
+```bash
+# Using Make
+make db-shell
+
+# Or using Docker Compose
+docker-compose exec db_postgresql psql -U postgres -d langchain_searcher_development
+```
+
+## 🧪 Testing
+
+```bash
+# Using Make
+make test
+
+# Or using Docker Compose
+docker-compose exec app rails test
+
+# For specific tests
+docker-compose exec app rails test test/models/client_test.rb
+```
+
+## 🏗️ Development
+
+### Generate Rails Resources
+
+```bash
+docker-compose exec app rails g scaffold Post title:string content:text
+docker-compose exec app rails g model Comment post:references content:text
+docker-compose exec app rails g controller api/v1/posts
+```
+
+### Rails Console
+
+```bash
+# Using Make
+make console
+
+# Or using Docker Compose
+docker-compose exec app rails console
+```
+
+### Run Rubocop
+
+```bash
+# Using Make
+make rubocop
+
+# Fix issues automatically
+make rubocop-fix
+
+# Or using Docker Compose
+docker-compose exec app bin/rubocop
+docker-compose exec app bin/rubocop -A
+```
+
+## 📦 Features
+
+- **AI Integration**: Google Gemini API for AI-powered features
+- **Vector Search**: PostgreSQL with pgvector extension
+- **LangChain**: Integration with LangChain for advanced AI workflows
+- **File Uploads**: Active Storage for file management
+- **Background Jobs**: Solid Queue for background processing
+- **Caching**: Solid Cache for performance optimization
+
+## 🐳 Docker Management
+
+### Clean All Docker Resources
+
+```bash
+# Using Make
+make clean
+
+# Or manually
 docker stop $(docker ps -aq)
 docker rm $(docker ps -aq)
 docker rmi -f $(docker images -aq)
 docker system prune -a --volumes -f
 docker network rm $(docker network ls -q)
-rm .db-created
-rm .db-seeded
-chmod 777 Gemfile.lock
 ```
 
-## Putting In Development Mode
-
-Whereas It Is Necessary To Run With Your User, Run
+### Rebuild Images
 
 ```bash
-id -u
+# Using Make
+make build
+
+# Or using Docker Compose
+docker-compose build --no-cache
 ```
 
-And Change The Dockerfile.Development File With The Value You Found
-
-So Build You Just Need To Run The First Time:
+### Force Database Recreation
 
 ```bash
-docker compose up --build
-docker compose build
+FORCE_DB_CREATE=true FORCE_DB_SEED=true docker-compose up --build
 ```
 
-And To Climb The Application Rode:
+## ⚙️ Environment Configuration
+
+### Required Variables
+
+- `GEMINI_API_KEY` - Your Google Gemini API key (required)
+- `POSTGRES_PASSWORD` - Database password
+
+### Optional Variables (with defaults)
+
+- `RAILS_ENV` - Rails environment (default: `development`)
+- `APPLICATION_NAME` - App name (default: `langchain_searcher`)
+- `DB_HOST` - Database host (default: `db_postgresql`)
+- `DB_PORT` - Database port (default: `5432`)
+- `PORT` - Server port (default: `8000`)
+
+See [Environment Variables Documentation](docs/ENVIRONMENT_VARIABLES.md) for complete reference.
+
+### Validate Environment
 
 ```bash
-FORCE_DB_CREATE=true FORCE_DB_SEED=true docker compose down
-FORCE_DB_CREATE=true FORCE_DB_SEED=true docker compose up --build
-FORCE_DB_CREATE=true FORCE_DB_SEED=true docker compose up
-docker compose down -v
-docker compose run app bundle install
-docker compose run app bash
-docker compose run app rails active_storage:install
-docker compose run app rails solid_queue:install
-docker compose run app rails solid_cache:install
+# Using Make
+make validate-env
+
+# Or directly
+./bin/validate-env
 ```
 
-## Migrations
+## 🚨 Troubleshooting
 
-To Run Migrations, Tests ... Etc, Run The App With Whatever Is Needed:
+### Port Already in Use
 
-```bash
-docker compose run app rails db:drop db:create
-docker compose run app rails db:migrate
-docker compose run app rails db:seed
+If port 8000 is already in use, change it in `.env`:
+
+```env
+PORT=8001
 ```
 
-## Rails Commands
+Then restart: `make restart`
 
-Example Of Interaction Between Computer and Container:
+### Database Connection Issues
 
-```bash
-docker compose run app rails c
-docker compose run app rails g scaffold post title
-docker compose run app rails g scaffold comment post:references comment:text
+1. Check if PostgreSQL is running: `docker-compose ps`
+2. Verify credentials in `.env` match `config/database.yml`
+3. Try resetting the database: `make db-reset`
+
+### Missing API Key Error
+
+Ensure `GEMINI_API_KEY` is set in `.env` and restart the application.
+
+## 📋 Project Structure
+
+```plaintext
+.
+├── app/
+│   ├── controllers/     # API controllers
+│   ├── models/          # ActiveRecord models
+│   ├── services/        # Business logic services
+│   └── jobs/            # Background jobs
+├── config/              # Application configuration
+├── db/                  # Database migrations and seeds
+├── docs/                # Documentation
+├── bin/                 # Executable scripts
+├── .env                 # Environment variables (git-ignored)
+├── .env.example         # Environment variables template
+├── docker-compose.yml   # Docker services configuration
+├── Dockerfile           # Docker image definition
+├── Gemfile              # Ruby dependencies
+└── Makefile            # Make commands
 ```
 
-## Testing with Docker
+## 🤝 Contributing
 
-For Tests For Example Run `Guard`:
+1. Create a feature branch
+2. Make your changes
+3. Run tests: `make test`
+4. Run linter: `make rubocop`
+5. Submit a pull request
 
-```bash
-docker compose run -e RAILS_ENV=test app bundle exec guard
-```
+## 📝 License
 
-For Migrations (Remembering That You May Need To Run Both In Development And Test):
+This project is licensed under the MIT License.
 
-```bash
-docker compose run app rails db:migrate
-```
+## 🔗 Resources
 
-## Putting Down
+- [Ruby on Rails Guides](https://guides.rubyonrails.org/)
+- [LangChain Documentation](https://ruby.langchain.io/)
+- [Google Gemini API](https://ai.google.dev/)
+- [pgvector Documentation](https://github.com/pgvector/pgvector)
+- [Docker Documentation](https://docs.docker.com/)
 
-If You Want To Stop The Services:
-
-```bash
-docker compose down -v
-```

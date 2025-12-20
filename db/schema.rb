@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_10_094525) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_20_090110) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "vector"
@@ -57,6 +57,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_10_094525) do
     t.datetime "updated_at", null: false
     t.string "zip_code"
     t.index ["client_id"], name: "index_addresses_on_client_id"
+    t.index ["embedding"], name: "index_addresses_on_embedding", opclass: :vector_cosine_ops, using: :hnsw
   end
 
   create_table "client_address_vectors", force: :cascade do |t|
@@ -98,6 +99,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_10_094525) do
     t.string "rg"
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_clients_on_email", unique: true
+    t.index ["embedding"], name: "index_clients_on_embedding", opclass: :vector_cosine_ops, using: :hnsw
   end
 
   create_table "uploads", force: :cascade do |t|

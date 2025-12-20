@@ -7,8 +7,14 @@
 # Ignore bundler config.
 /.bundle
 
-# Ignore all environment files.
+# Ignore all environment files (but keep .env.example).
 /.env
+/.env.local
+/.env.*.local
+!/.env.example
+
+# Ignore VSCode settings (use .vscode.example/ as template)
+/.vscode
 
 # Ignore all logfiles and tempfiles.
 /log/*

@@ -1,47 +1,121 @@
 version: '3.8'
+
 networks:
   backend:
+    driver: bridge
+
 services:
+  # PostgreSQL Database with pgvector extension
   db_postgresql:
     image: ankane/pgvector:latest
+    container_name: ${APPLICATION_NAME:-langchain_searcher}_db
     ports:
-      - "5432:5432"
+      - "${DB_PORT:-5432}:5432"
     environment:
-      DB_HOST: ${DB_HOST}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      DB_PORT: ${DB_PORT}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${APPLICATION_NAME:-langchain_searcher}_development
+      PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Rails Application
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ${APPLICATION_NAME:-langchain_searcher}_app
     tty: true
+    stdin_open: true
     volumes:
       - .:/app
       - bundle:/usr/local/bundle
-      - /home/rtoledo/www/gems/langchainrb_rails:/gems/langchainrb_rails
+      # Uncomment if you have a local langchainrb_rails gem for development
+      # - /home/rtoledo/www/gems/langchainrb_rails:/gems/langchainrb_rails
+      - rails_cache:/app/tmp/cache
+      - rails_storage:/app/storage
     working_dir: /app
     environment:
-      FORCE_DB_CREATE: ${FORCE_DB_CREATE}
-      FORCE_DB_SEED: ${FORCE_DB_SEED}
-      APPLICATION_NAME: ${APPLICATION_NAME}
-      DB_HOST: ${DB_HOST}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
-      DB_PORT: ${DB_PORT}
-      PORT: ${PORT}
+      # Rails Configuration
+      RAILS_ENV: ${RAILS_ENV:-development}
+      RAILS_MAX_THREADS: ${RAILS_MAX_THREADS:-5}
+
+      # Application
+      APPLICATION_NAME: ${APPLICATION_NAME:-langchain_searcher}
+
+      # Database Configuration
+      DB_HOST: ${DB_HOST:-db_postgresql}
+      DB_PORT: ${DB_PORT:-5432}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      # DATABASE_URL: ${DATABASE_URL}  # Uncomment only if you want to override individual DB settings
+
+      # Server Configuration
+      PORT: ${PORT:-3000}
+      BINDING: ${BINDING:-0.0.0.0}
+
+      # Docker Development Options
+      FORCE_DB_CREATE: ${FORCE_DB_CREATE:-false}
+      FORCE_DB_SEED: ${FORCE_DB_SEED:-false}
+
+      # API Keys
       GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+
+      # AI Provider Configuration
+      AI_PROVIDER: ${AI_PROVIDER:-openai}
+      AI_EMBEDDING_MODEL: ${AI_EMBEDDING_MODEL:-text-embedding-3-small}
+      AI_EMBEDDING_DIMENSIONS: ${AI_EMBEDDING_DIMENSIONS:-1536}
+
+      # Optional Services
+      # REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
     command: bin/docker-dev-start-web.sh
     networks:
       - backend
     ports:
-      - "8000:8000"
+      - "${PORT:-8000}:${PORT:-8000}"
     depends_on:
-      - db_postgresql
+      db_postgresql:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Uncomment to add Redis support
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: ${APPLICATION_NAME:-langchain_searcher}_redis
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis_data:/data
+  #   networks:
+  #     - backend
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "ping"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #   restart: unless-stopped
 
 volumes:
   bundle:
+    driver: local
   postgres_data:
+    driver: local
+  rails_cache:
+    driver: local
+  rails_storage:
+    driver: local
+  # Uncomment if using Redis
+  # redis_data:
+  #   driver: local
